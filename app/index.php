@@ -1,10 +1,27 @@
 <?php 
+
+session_start();
+
 require "functions.php";
 
+// var_dump($_SERVER);
+generateToken();
 $objet = callBd();
 postTask($objet);
-// var_dump($_SERVER);
-var_dump($_POST);
+
+// var_dump($_POST);
+// var_dump($_GET);
+// var_dump($_REQUEST);
+// var_dump($_SESSION['token']);
+
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'delete') {
+    supp($objet);
+}
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'suspend') {
+    suspend($objet);
+}
 
 ?>
 
@@ -26,11 +43,33 @@ var_dump($_POST);
         </div>
     </header>
     <main class="content-main">
+    <?php
+
+        $errors = [
+            'csrf' => 'Votre session est invalide.',
+            'referer' => 'D\'où venez vous ?',
+            'insert_ko' => 'Erreur lors de la sauvegarde de la produit.',
+            'update_ko' => 'Erreur lors de la modif du produit.'
+        ];
+        if (isset($_SESSION['error'])) {
+            echo '<p class="notif-error">' . $errors[$_SESSION['error']] . '</p>';
+            unset($_SESSION['error']);
+        }
+
+        $messages = [
+            'insert_ok' => 'tâche sauvegardée.',
+            'update_ok' => 'tâche modifié.'
+        ];
+        if (isset($_SESSION['msg'])) {
+            echo '<p class="notif-success">' . $messages[$_SESSION['msg']] . '</p>';
+            unset($_SESSION['msg']);
+        }
+    ?>
         <div class="content-lst">
             <ul class="p-2 list-group">
-                <!-- <button type="button" class="my-2 list-group-item list-group-item-success list-group-item-action">teste 1</button>
-                <button type="button" class="my-2 list-group-item list-group-item-action list-group-item-danger">teste 2</button>
-                <button type="button" class="my-2 list-group-item list-group-item-action list-group-item-warning">teste 3</button> -->
+                <a href="#" class="my-2 list-group-item list-group-item-success list-group-item-action">teste 1</a>
+                <a href="#" class="my-2 list-group-item list-group-item-action list-group-item-danger">teste 2 </a>
+                <a href="#" class="my-2 list-group-item list-group-item-action list-group-item-warning">teste 3</a>
                 <?php getTask($objet) ?>
             </ul>
         </div>
@@ -50,17 +89,29 @@ var_dump($_POST);
                 </div>
                 
                 <button type="submit" value="Submit" class="btn btn-success">Valider</button>
-                
+                <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
+
+                <a href="page-modif.php" class="btn btn-primary " role="button">
+                    Modifier
+                </a>
+
+                <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
+                <input type="hidden" name="action" value='delete'>
+
+                <button type="submit" value="button" class="btn btn-secondary">Suspendre</button>
+                <input type="hidden" name="action" value='suspend'>
+
               </form>
         </div>
-        <div class="content_supp-eddit">
-            <a href="page-modif.php" class="btn btn-primary " role="button">
-                Modifier
-            </a>
-            <button class="btn btn-danger disabled">
-                Suprimer
-            </button>
-        </div>
+        <!-- <div class="content_supp-eddit">
+
+                <a href="page-modif.php" class="btn btn-primary " role="button">
+                    Modifier
+                </a>
+                <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
+                <input type="hidden" name="sup" value=''>
+
+        </div> -->
     </main>
     <footer></footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
