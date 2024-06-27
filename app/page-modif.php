@@ -1,21 +1,12 @@
 <?php 
 
-try {
-    
-    $dbCRUD = new PDO(
-        'mysql:host=db;dbname=crud;charset=utf8',
-        'bébert',
-        'dwwm2024'
-    );
+require "functions.php";
+// var_dump($_GET);
+var_dump($_POST);
+// session_start();
+$objet = callBd();
+// var_dump(getTaskToChange($objet));
 
-    $dbCRUD->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-}
-catch (Exception $e) {
-
-die('Unable to connect to the database.
-'.$e->getMessage());
-
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -36,13 +27,14 @@ die('Unable to connect to the database.
     </header>
     <main class="content-main">
         <div class="content_add-task">
-            <form>
+            <form action="" method="post">
                 <div class="mb-3">
                   <label for="edditTask" class="form-label">modifier tâche </label>
-                  <input type="modier" class="form-control" id="edditTask" aria-describedby="modifierTask">
+                  <input type="modier" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?= getTaskToChange($objet) ?>'>
                 </div>
-                
-                <button type="submit" class="btn btn-success">Valider</button>
+<!-- Je récupère bien la tâche que je cherche à modifier mais je ne sais pas comment la renvoyer une fois modifiée                              -->
+                <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>
+                <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
               </form>
         </div>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">

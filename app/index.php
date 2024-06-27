@@ -4,15 +4,10 @@ session_start();
 
 require "functions.php";
 
-// var_dump($_SERVER);
+
 generateToken();
 $objet = callBd();
 postTask($objet);
-
-// var_dump($_POST);
-// var_dump($_GET);
-// var_dump($_REQUEST);
-// var_dump($_SESSION['token']);
 
 
 if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'delete') {
@@ -22,6 +17,11 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
 if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'suspend') {
     suspend($objet);
 }
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'gochange') {
+    gochangeTask($objet);
+}
+
 
 ?>
 
@@ -88,30 +88,26 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                     </label>
                 </div>
                 
-                <button type="submit" value="Submit" class="btn btn-success">Valider</button>
+                <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>
                 <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
 
-                <a href="page-modif.php" class="btn btn-primary " role="button">
-                    Modifier
-                </a>
+              
+               
+<!-- Je n'arrive pas à faire fonction mes trois buttons, je suis obliger de commenter deux boutons pour en faire fonctionner 1 -->
 
-                <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
-                <input type="hidden" name="action" value='delete'>
 
-                <button type="submit" value="button" class="btn btn-secondary">Suspendre</button>
-                <input type="hidden" name="action" value='suspend'>
+                    <button type="submit" value="button" class="btn btn-primary">Modifier</button>
+                    <input type="hidden" name="action" value='gochange'>
+                
+                    <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
+                    <input type="hidden" name="action" value='delete'>
 
-              </form>
+                    <button type="submit" value="button" class="btn btn-secondary">Suspendre</button>
+                    <input type="hidden" name="action" value='suspend'>
+                
+            </form>
         </div>
-        <!-- <div class="content_supp-eddit">
 
-                <a href="page-modif.php" class="btn btn-primary " role="button">
-                    Modifier
-                </a>
-                <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
-                <input type="hidden" name="sup" value=''>
-
-        </div> -->
     </main>
     <footer></footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

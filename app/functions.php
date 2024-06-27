@@ -2,18 +2,9 @@
 
 
 ////////////////////////////////////////////////////////////
-/**
- * Undocumented function
- *Get the lst of values of array
- * @param [type] $array
- * @return void
- */
-function getLst($array)
-{
-    foreach ($array as $value) {
-        echo "<li>$value</li>";
-    }
-}
+// status 1 = en cours 
+// status 2 = suspendu 
+// satutus 3 = en cours de modification
 /////////////////////////////////////////////////////////////
 
 /**
@@ -150,7 +141,12 @@ function postTask($objet)
     }
 }
 
-
+/**
+ * Undocumented function
+ *
+ * @param [type] $objet
+ * @return void
+ */
 function supp ($objet) {
 
         $query = $objet->prepare ("DELETE FROM `task` WHERE Id_task = :id");
@@ -177,6 +173,12 @@ function supp ($objet) {
     
 }
 
+/**
+ * Undocumented function
+ *
+ * @param [type] $objet
+ * @return void
+ */
 function suspend ($objet) {
 
     $query = $objet->prepare ("UPDATE `task` SET `status`='2' WHERE Id_task = :id");
@@ -203,3 +205,58 @@ function suspend ($objet) {
 
 }
 
+function gochangeTask ($objet) {
+
+    $query = $objet->prepare ("UPDATE `task` SET `status`='3' WHERE Id_task = :id");
+
+    $queryValues = [
+        'id' => $_REQUEST['id']
+    ];
+
+    $queryIsOk = $query->execute($queryValues);
+
+        if ($queryIsOk) {
+            $url ='page-modif.php';
+
+            redirectTo($url);
+
+            exit;
+        } else {
+
+            $url ='index.php?error=update_ko';
+            redirectTo($url);
+
+            exit;
+        }   
+}
+
+//////////////////////////////page-modif//////////////////////
+
+/**
+ * Undocumented function
+ *
+ * @param [type] $objet
+ * @return void
+ */
+function getTaskToChange($objet) {
+
+    $query = $objet->prepare("SELECT id_task, name, status, date_task, priority_level 
+    FROM task
+    ORDER BY priority_level DESC;");
+    $query->execute();
+
+    while ($task = $query->fetch()) {
+        // var_dump($task["priority_level"]);
+        if ($task["priority_level"] === 1 && $task["status"] === 3) {
+            echo $task['name'];
+        } 
+        if ($task["priority_level"] === 2 && $task["status"] === 3) {
+            echo $task['name'];
+        }
+    }
+
+}
+
+// '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-warning">' . $task['name'] . '</a>'
+
+// '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-danger">' . $task['name'] . '</a>'
