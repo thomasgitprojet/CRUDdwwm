@@ -2,8 +2,8 @@
 
 require "functions.php";
 // var_dump($_GET);
-var_dump($_POST);
-// session_start();
+// var_dump($_POST);
+session_start();
 $objet = callBd();
 // var_dump(getTaskToChange($objet));
 
@@ -30,7 +30,7 @@ $objet = callBd();
             <form action="" method="post">
                 <div class="mb-3">
                   <label for="edditTask" class="form-label">modifier tâche </label>
-                  <input type="modier" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?= getTaskToChange($objet) ?>'>
+                  <input type="submits" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?= getTaskToChange($objet) ?>'>
                 </div>
 <!-- Je récupère bien la tâche que je cherche à modifier mais je ne sais pas comment la renvoyer une fois modifiée                              -->
                 <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>

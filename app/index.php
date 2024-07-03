@@ -4,21 +4,21 @@ session_start();
 
 require "functions.php";
 
-
+// var_dump($_REQUEST);
 generateToken();
 $objet = callBd();
 postTask($objet);
 
 
-if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'delete') {
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Supprimer') {
     supp($objet);
 }
 
-if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'suspend') {
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Suspendre') {
     suspend($objet);
 }
 
-if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'gochange') {
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Modifier') {
     gochangeTask($objet);
 }
 
@@ -91,19 +91,14 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                 <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>
                 <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
 
-              
-               
-<!-- Je n'arrive pas à faire fonction mes trois buttons, je suis obliger de commenter deux boutons pour en faire fonctionner 1 -->
-
-
-                    <button type="submit" value="button" class="btn btn-primary">Modifier</button>
-                    <input type="hidden" name="action" value='gochange'>
+                    <!-- <button type="submit" value="button" class="btn btn-primary">Modifier</button> -->
+                    <input class="btn btn-primary" type="submit" name="action" value='Modifier'>
                 
-                    <button type="submit" value="button" class="btn btn-danger">Supprimer</button>
-                    <input type="hidden" name="action" value='delete'>
+                    <!-- <button type="submit" value="button" class="btn btn-danger">Supprimer</button> -->
+                    <input class="btn btn-danger" type="submit" name="action" value='Supprimer'>
 
-                    <button type="submit" value="button" class="btn btn-secondary">Suspendre</button>
-                    <input type="hidden" name="action" value='suspend'>
+                    <!-- <button type="submit" value="button" class="btn btn-secondary">Suspendre</button> -->
+                    <input class="btn btn-secondary" type="submit" name="action" value='Suspendre'>
                 
             </form>
         </div>
