@@ -147,6 +147,67 @@ function postTask($objet)
  * @param [type] $objet
  * @return void
  */
+function upDateTask($objet)
+{
+    if (!empty($_POST)) {
+        if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], 'http://localhost:8080')) {
+
+            $_SESSION['error'] = 'referer';
+            header('Location: index.php');
+            // var_dump('referer');
+            exit;
+        }
+        if (!isset($_SESSION['token']) || !isset($_POST['token']) || $_SESSION['token'] !== $_POST['token']) {
+
+            $_SESSION['error'] = 'csrf';
+            header('Location: index.php');
+            //  var_dump('csrf');
+            exit;
+        }
+
+        $errorsList = [];
+
+        if (!isset($_POST['name']) || strlen($_POST['name']) === 0) {
+            $errorsList[] = 'Saisissez un nom de tâche';
+        }
+
+        if (strlen($_POST['name']) > 50) {
+            $errorsList[] = 'Saisissez un nom pour une tâche de 50 caractères au maximum';
+        }
+        // var_dump($errorsList, $_SESSION);
+        if (empty($errorsList)) {
+            
+            $query = $objet->prepare("UPDATE task SET name = :name, status = :status WHERE Id_task=:id_task");
+
+            $queryValues = [
+                'name' => htmlspecialchars($_POST['name']),
+                'id_task' => intval($_POST['id']),
+                'status' => 1
+            ];
+
+            $queryIsOk = $query->execute($queryValues);
+
+            if ($queryIsOk) {
+
+                header('Location: index.php?msg=insert_ok');
+
+                exit;
+            } else {
+
+                header('Location: index.php?error=insert_ko');
+
+                exit;
+            }
+        }
+    }
+}
+
+/**
+ * Undocumented function
+ *
+ * @param [type] $objet
+ * @return void
+ */
 function supp ($objet) {
 
         $query = $objet->prepare ("DELETE FROM `task` WHERE Id_task = :id");
@@ -238,7 +299,7 @@ function gochangeTask ($objet) {
  * @param [type] $objet
  * @return void
  */
-function getTaskToChange($objet) {
+function getTaskValueToChange($objet) {
 
     $query = $objet->prepare("SELECT id_task, name, status, date_task, priority_level 
     FROM task
@@ -252,6 +313,31 @@ function getTaskToChange($objet) {
         } 
         if ($task["priority_level"] === 2 && $task["status"] === 3) {
             echo $task['name'];
+        }
+    }
+
+}
+
+/**
+ * Undocumented function
+ *
+ * @param [type] $objet
+ * @return void
+ */
+function getTaskIdToChange($objet) {
+
+    $query = $objet->prepare("SELECT id_task, name, status, date_task, priority_level 
+    FROM task
+    ORDER BY priority_level DESC;");
+    $query->execute();
+
+    while ($task = $query->fetch()) {
+        // var_dump($task["priority_level"]);
+        if ($task["priority_level"] === 1 && $task["status"] === 3) {
+            echo $task['id_task'];
+        } 
+        if ($task["priority_level"] === 2 && $task["status"] === 3) {
+            echo $task['id_task'];
         }
     }
 

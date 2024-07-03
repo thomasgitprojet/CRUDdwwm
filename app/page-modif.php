@@ -3,9 +3,12 @@
 require "functions.php";
 // var_dump($_GET);
 // var_dump($_POST);
+// var_dump($_REQUEST);
 session_start();
 $objet = callBd();
-// var_dump(getTaskToChange($objet));
+upDateTask($objet);
+var_dump(getTaskValueToChange($objet));
+var_dump(getTaskIdToChange($objet));
 
 ?>
 <!DOCTYPE html>
@@ -29,11 +32,15 @@ $objet = callBd();
         <div class="content_add-task">
             <form action="" method="post">
                 <div class="mb-3">
-                  <label for="edditTask" class="form-label">modifier tâche </label>
-                  <input type="submits" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?= getTaskToChange($objet) ?>'>
+
+                  <label for="edditTask" class="form-label">tâche à modifier : <?= getTaskValueToChange($objet) ?> </label>
+                  <input type="submits" name="name" class="form-control" id="edditTask" aria-describedby="modifierTask" value=''>
+
+                  <input type="hidden" name="id" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?getTaskIdToChange($objet)?>'>
+
+
                 </div>
-<!-- Je récupère bien la tâche que je cherche à modifier mais je ne sais pas comment la renvoyer une fois modifiée                              -->
-                <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>
+                <button type="submit" value="Submit" class="btn btn-success">Modifier</button>
                 <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
               </form>
         </div>
