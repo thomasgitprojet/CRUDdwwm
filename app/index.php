@@ -3,23 +3,32 @@
 session_start();
 
 require "functions.php";
+include 'includes/_config.php';
+include 'includes/_database.php';
 
-// var_dump($_REQUEST);
+var_dump($_REQUEST);
 generateToken();
-$objet = callBd();
-postTask($objet);
+postTask($dbCrud);
 
 
 if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Supprimer') {
-    supp($objet);
+    supp($dbCrud);
 }
 
 if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Suspendre') {
-    suspend($objet);
+    suspend($dbCrud);
 }
 
 if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Modifier') {
-    gochangeTask($objet);
+    gochangeTask($dbCrud);
+}
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === '↑') {
+    changeTaskPriority($dbCrud, 1, $_REQUEST['id']);
+}
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === '↓') {
+    changeTaskPriority($dbCrud, -1, $_REQUEST['id']);
 }
 
 
@@ -45,21 +54,12 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
     <main class="content-main">
     <?php
 
-        $errors = [
-            'csrf' => 'Votre session est invalide.',
-            'referer' => 'D\'où venez vous ?',
-            'insert_ko' => 'Erreur lors de la sauvegarde de la produit.',
-            'update_ko' => 'Erreur lors de la modif du produit.'
-        ];
+
         if (isset($_SESSION['error'])) {
             echo '<p class="notif-error">' . $errors[$_SESSION['error']] . '</p>';
             unset($_SESSION['error']);
         }
 
-        $messages = [
-            'insert_ok' => 'tâche sauvegardée.',
-            'update_ok' => 'tâche modifié.'
-        ];
         if (isset($_SESSION['msg'])) {
             echo '<p class="notif-success">' . $messages[$_SESSION['msg']] . '</p>';
             unset($_SESSION['msg']);
@@ -70,7 +70,7 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                 <a href="#" class="my-2 list-group-item list-group-item-success list-group-item-action">teste 1</a>
                 <a href="#" class="my-2 list-group-item list-group-item-action list-group-item-danger">teste 2 </a>
                 <a href="#" class="my-2 list-group-item list-group-item-action list-group-item-warning">teste 3</a>
-                <?php getTask($objet) ?>
+                <?php getTask($dbCrud)?>
             </ul>
         </div>
         <div class="content_add-task">
@@ -91,14 +91,18 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                 <button type="submit" value="Submit" class="btn btn-success">Ajouter</button>
                 <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
 
-                    <!-- <button type="submit" value="button" class="btn btn-primary">Modifier</button> -->
+
                     <input class="btn btn-primary" type="submit" name="action" value='Modifier'>
                 
-                    <!-- <button type="submit" value="button" class="btn btn-danger">Supprimer</button> -->
+
                     <input class="btn btn-danger" type="submit" name="action" value='Supprimer'>
 
-                    <!-- <button type="submit" value="button" class="btn btn-secondary">Suspendre</button> -->
+
                     <input class="btn btn-secondary" type="submit" name="action" value='Suspendre'>
+
+                    <input class="btn btn-dark" type="submit" name="action" value='↑'>
+
+                    <input class="btn btn-dark" type="submit" name="action" value='↓'>
                 
             </form>
         </div>

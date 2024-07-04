@@ -1,14 +1,14 @@
 <?php 
 
 require "functions.php";
+include 'includes/_database.php';
 // var_dump($_GET);
 // var_dump($_POST);
 // var_dump($_REQUEST);
 session_start();
-$objet = callBd();
-upDateTask($objet);
-var_dump(getTaskValueToChange($objet));
-var_dump(getTaskIdToChange($objet));
+upDateTask($dbCrud);
+var_dump(getTaskValueToChange($dbCrud));
+var_dump(getTaskIdToChange($dbCrud));
 
 ?>
 <!DOCTYPE html>

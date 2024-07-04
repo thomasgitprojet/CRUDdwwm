@@ -1,24 +1,47 @@
 <?php
-// session_start();
-// var_dump($_REQUEST);
+session_start();
 
-// require "functions.php";
-// $objet = callBd();
+require "functions.php";
+include 'includes/_database.php';
+include 'includes/_config.php';
 
-// if (!isset($_REQUEST['action'])) {
-//     redirectTo('index.php');
-// }
+if (!isset($_REQUEST['action'])) {
+    redirectTo('index.php');
+}
 
+preventCSRF();
 
-// if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'delete') {
-//     supp($objet);
-// }
+if ($_REQUEST['action'] === 'Supprimer' && isset($_REQUEST['id']) && isset($_REQUEST['action']) ) {
+    // supp($dbCrud);
+    $query = $objet->prepare ("DELETE FROM `task` WHERE Id_task = :id");
 
-// else if (isset($_REQUEST['id']) && isset($_REQUEST['action-suspend']) && $_REQUEST['action'] === 'suspend') {
-//     suspend($objet);
-// }
+        $queryValues = [
+            'id' => $_REQUEST['id']
+        ];
 
-// else if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'gochange') {
-//     gochangeTask($objet);
-// }
+        $queryIsOk = $query->execute($queryValues);
 
+        if ($queryIsOk) {
+            $url ='index.php?msg=insert_ok';
+
+            redirectTo($url);
+
+            exit;
+        } else {
+
+            $url ='index.php?error=insert_ko';
+            redirectTo($url);
+
+            exit;
+        }     
+}
+
+else if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Suspendre') {
+    suspend($dbCrud);
+}
+
+else if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Modifier') {
+    gochangeTask($dbCrud);
+}
+
+redirectTo('index.php');

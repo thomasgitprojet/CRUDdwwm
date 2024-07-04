@@ -26,29 +26,50 @@ function redirectTo(string $url): void
     exit;
 }
 
-
 /**
- * Undocumented function
+ * Verify HTTP referer and token. Redirect with error message.
  *
  * @return void
  */
-function callBd()
+function preventCSRF(string $redirectUrl = 'index.php'): void
 {
-    try {
+    global $globalUrl;
 
-        $dbCrud = new PDO(
-            'mysql:host=db;dbname=crud;charset=utf8',
-            'bébert',
-            'dwwm2024'
-        );
-
-        $dbCrud->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-
-        die('Unable to connect to the database.
-        ' . $e->getMessage());
+    if (!isset($_SERVER['HTTP_REFERER']) || !str_contains($_SERVER['HTTP_REFERER'], $globalUrl)) {
+        addError('referer');
+        redirectTo($redirectUrl);
     }
-    return $dbCrud;
+
+    if (!isset($_SESSION['token']) || !isset($_REQUEST['token']) || $_SESSION['token'] !== $_REQUEST['token']) {
+        addError('csrf');
+        redirectTo($redirectUrl);
+    }
+}
+
+/**
+ * Add a new error message to display on next page. 
+ *
+ * @param string $errorMsg - Error message to display
+ * @return void
+ */
+function addError(string $errorMsg): void
+{
+    if (!isset($_SESSION['errorsList'])) {
+        $_SESSION['errorsList'] = [];
+    }
+    $_SESSION['errorsList'][] = $errorMsg;
+}
+
+
+/**
+ * Add a new message to display on next page. 
+ *
+ * @param string $message - Message to display
+ * @return void
+ */
+function addMessage(string $message): void
+{
+    $_SESSION['msg'] = $message;
 }
 
 /**
@@ -69,12 +90,12 @@ function getTask($callObjet)
 
     while ($task = $query->fetch()) {
         // var_dump($task["priority_level"]);
-        if ($task["priority_level"] === 1 && $task["status"] === 1) {
+        if ($task["status"] === 1) {
             echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-warning">' . $task['name'] . '</a>';
         } 
-        if ($task["priority_level"] === 2 && $task["status"] === 1) {
-            echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-danger">' . $task['name'] . '</a>';
-        }
+        // if ($task["priority_level"] === 2 && $task["status"] === 1) {
+        //     echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-danger">' . $task['name'] . '</a>';
+        // }
     }
 }
 
@@ -121,7 +142,8 @@ function postTask($objet)
                 'name' => htmlspecialchars($_POST['name']),
                 'status' => 1,
                 'date_task' => '2024-06-24',
-                'priority_level' => !isset($_POST['checked']) ? 1 : 2
+                'priority_level' => 0
+                // !isset($_POST['checked']) ? 1 : 2
             ];
 
             $queryIsOk = $query->execute($queryValues);
@@ -289,6 +311,48 @@ function gochangeTask ($objet) {
 
             exit;
         }   
+}
+
+function changeTaskPriority (PDO $db, int $changingValue, int $id): void
+{
+    try {
+        $db->beginTransaction();
+
+        $query = $db->prepare("SELECT Id_task FROM task WHERE priority_level = (
+            SELECT priority_level + :changingValue FROM task WHERE Id_task = :id);");
+
+            $query->execute([
+                'id'=>$id,
+                'changingValue' => $changingValue
+            ]);
+
+            $idToMove = intval($query->fetchColumn());
+            var_dump($idToMove);
+            if ($idToMove !== false) {
+                $queryUpdate = $db->prepare("UPDATE task SET priority_level = priority_level + :changingValue WHERE Id_task = :id;");
+                $queryUpdate->execute([
+                    'id'=>$idToMove,
+                    'changingValue' => $changingValue * -1
+                ]);
+            }
+
+            $queryUpdate = $db->prepare("UPDATE task SET priority_level = priority_level + :changingValue WHERE Id_task = :id;");
+            $isUpdateOk = $queryUpdate->execute([
+                'id'=>$id,
+                'changingValue' => $changingValue
+            ]);
+
+            $db->commit();
+
+            if ($isUpdateOk) {
+                addMessage('update_ok');
+            }else {
+                addError('update_ko');
+            }
+
+    }catch (Exception $e) {
+        $db->rollBack('update_ko');
+    }
 }
 
 //////////////////////////////page-modif//////////////////////
