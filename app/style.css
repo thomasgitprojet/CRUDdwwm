@@ -55,6 +55,10 @@ li {
     padding: 0.5rem;
 }
 
+input::placeholder {
+    opacity: 0.2;
+  }
+
 /* ///////////////////////supp-eddit-task//////////////////////////////// */
 
 .content_supp-eddit {

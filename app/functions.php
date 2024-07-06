@@ -19,6 +19,12 @@ function generateToken()
     }
 }
 
+function getDateSession() {
+
+        $_SESSION['currentDay'] = date('y-m-d');
+    
+}
+
 function redirectTo(string $url): void
 {
     // var_dump('REDIRECT ' . $url);
@@ -92,6 +98,7 @@ function getTask($callObjet)
         // var_dump($task["priority_level"]);
         if ($task["status"] === 1) {
             echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-warning">' . $task['name'] . '</a>';
+
         } 
         // if ($task["priority_level"] === 2 && $task["status"] === 1) {
         //     echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-danger">' . $task['name'] . '</a>';
@@ -135,13 +142,14 @@ function postTask($objet)
         // var_dump($errorsList, $_SESSION);
         if (empty($errorsList)) {
 
+
             $query = $objet->prepare("INSERT INTO `task` (`name`, `status`, `date_task`, `priority_level`) 
                 VALUES (:name, :status, :date_task, :priority_level)");
 
             $queryValues = [
                 'name' => htmlspecialchars($_POST['name']),
                 'status' => 1,
-                'date_task' => '2024-06-24',
+                'date_task' =>date('Y-m-d',strtotime( $_POST['date'])),
                 'priority_level' => 0
                 // !isset($_POST['checked']) ? 1 : 2
             ];
@@ -233,11 +241,11 @@ function upDateTask($objet)
 function supp ($objet) {
 
         $query = $objet->prepare ("DELETE FROM `task` WHERE Id_task = :id");
-
+        
         $queryValues = [
             'id' => $_REQUEST['id']
         ];
-
+        
         $queryIsOk = $query->execute($queryValues);
 
         if ($queryIsOk) {
@@ -372,12 +380,12 @@ function getTaskValueToChange($objet) {
 
     while ($task = $query->fetch()) {
         // var_dump($task["priority_level"]);
-        if ($task["priority_level"] === 1 && $task["status"] === 3) {
+        if ($task["status"] === 3) {
             echo $task['name'];
         } 
-        if ($task["priority_level"] === 2 && $task["status"] === 3) {
-            echo $task['name'];
-        }
+        // if ($task["priority_level"] === 2 && $task["status"] === 3) {
+        //     echo $task['name'];
+        // }
     }
 
 }
@@ -397,12 +405,10 @@ function getTaskIdToChange($objet) {
 
     while ($task = $query->fetch()) {
         // var_dump($task["priority_level"]);
-        if ($task["priority_level"] === 1 && $task["status"] === 3) {
+        if ($task["status"] === 3) {
             echo $task['id_task'];
         } 
-        if ($task["priority_level"] === 2 && $task["status"] === 3) {
-            echo $task['id_task'];
-        }
+
     }
 
 }

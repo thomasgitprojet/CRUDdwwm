@@ -6,7 +6,8 @@ require "functions.php";
 include 'includes/_config.php';
 include 'includes/_database.php';
 
-var_dump($_REQUEST);
+getDateSession();
+// var_dump($_REQUEST);
 generateToken();
 postTask($dbCrud);
 
@@ -81,6 +82,11 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                   <input type="text" name="name" class="form-control" id="InputNewTask" aria-describedby="taskHelp">
                 </div>
 
+                <div class="mb-3">
+                  <label for="InputDate" class="form-label">Tâche à effectuer avant le :</label>
+                  <input type="text"  placeholder="jj/mm/aaaa" name="date" class="form-control" id="InputDate" aria-describedby="dateHelp">
+                </div>
+
                 <div class="form-check my-2">
                     <input class="form-check-input" name="checked" type="checkbox" value= "urgent" id="flexCheckDefault">
                     <label class="form-check-label" for="flexCheckDefault">
@@ -95,7 +101,7 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
                     <input class="btn btn-primary" type="submit" name="action" value='Modifier'>
                 
 
-                    <input class="btn btn-danger" type="submit" name="action" value='Supprimer'>
+                    <input class="btn btn-danger js-delete-btn" type="submit" name="action" value='Supprimer'>
 
 
                     <input class="btn btn-secondary" type="submit" name="action" value='Suspendre'>
@@ -110,5 +116,6 @@ if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] 
     </main>
     <footer></footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script type= "module" src= "js/script.js"></script>
 </body>
 </html>

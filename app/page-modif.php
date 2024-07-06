@@ -6,9 +6,11 @@ include 'includes/_database.php';
 // var_dump($_POST);
 // var_dump($_REQUEST);
 session_start();
-upDateTask($dbCrud);
-var_dump(getTaskValueToChange($dbCrud));
-var_dump(getTaskIdToChange($dbCrud));
+
+
+if (isset($_REQUEST['id']) && isset($_REQUEST['action']) && $_REQUEST['action'] === 'Modifier') {
+    upDateTask($dbCrud);
+}
 
 ?>
 <!DOCTYPE html>
@@ -33,14 +35,14 @@ var_dump(getTaskIdToChange($dbCrud));
             <form action="" method="post">
                 <div class="mb-3">
 
-                  <label for="edditTask" class="form-label">tâche à modifier : <?= getTaskValueToChange($objet) ?> </label>
+                  <label for="edditTask" class="form-label">tâche à modifier : <?= getTaskValueToChange($dbCrud) ?> </label>
                   <input type="submits" name="name" class="form-control" id="edditTask" aria-describedby="modifierTask" value=''>
 
-                  <input type="hidden" name="id" class="form-control" id="edditTask" aria-describedby="modifierTask" value='<?getTaskIdToChange($objet)?>'>
+                  <input type="hidden" name="id" class="form-control" id="edditTask" aria-describedby="modifierTask" value= <?= getTaskIdToChange($dbCrud) ?>>
 
 
                 </div>
-                <button type="submit" value="Submit" class="btn btn-success">Modifier</button>
+                <button type="submit" name="action" value="Modifier" class="btn btn-success">Modifier</button>
                 <input type="hidden" name="token" value='<?= $_SESSION['token'] ?>'>
               </form>
         </div>

@@ -1,11 +1,17 @@
 <?php
 
+require __DIR__ . '/../vendor/autoload.php';
+// $_ENV
+
+$dotenv = Dotenv\Dotenv :: createImmutable (__DIR__ . '/../');
+ $dotenv -> load ();
+
 try {
 
     $dbCrud = new PDO(
-        'mysql:host=db;dbname=crud;charset=utf8',
-        'bébert',
-        'dwwm2024'
+        'mysql:host=' . $_ENV["DB_HOST"].';dbname=' . $_ENV["DB_NAME"]. ';charset=utf8',
+        $_ENV['DB_USER'],
+        $_ENV['DB_PWD']
     );
 
     $dbCrud->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
