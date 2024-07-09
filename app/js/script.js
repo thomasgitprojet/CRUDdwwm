@@ -1,11 +1,23 @@
-async function callAPIDelete(params) {
-    try {
-        const response = await fetch("api.php?" + params);
-        const json = await response.json();
+import * as Task from './_functions.js';
 
-    } catch (error) {
-        
-    }
-}
-let tetsId = document.querySelector('[data-task-id]');
-console.log(tetsId);
+
+let taskId = document.querySelectorAll('[data-task-id]');
+let btnSup = document.querySelector('[data-delete]');
+let btnFinish = document.querySelector('[data-finish]');
+
+taskId.forEach(function(taskItm) {
+    taskItm.addEventListener('click', function (e) {
+
+        let valueId = taskItm.dataset.taskId;
+
+        btnSup.addEventListener('click', function (e) {
+            Task.deleteTask(parseInt(valueId));
+        })
+
+        // btnFinish.addEventListener('click', function (e) {
+        //     console.log("click");
+        //     callAPIFinish('action=Terminer&id=' + valueId + '&token=' + document.getElementById('token').value)
+        // })
+    })
+})
+

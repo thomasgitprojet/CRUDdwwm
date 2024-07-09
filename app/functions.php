@@ -5,6 +5,7 @@
 // status 1 = en cours 
 // status 2 = suspendu 
 // satutus 3 = en cours de modification
+// satutus 4 = tâche faite
 /////////////////////////////////////////////////////////////
 
 /**
@@ -53,6 +54,51 @@ function preventCSRF(string $redirectUrl = 'index.php'): void
 }
 
 /**
+ * Check fo referer
+ *
+ * @return boolean Is the current referer valid ?
+ */
+function isRefererOk(): bool
+{
+    global $globalUrl;
+    return isset($_SERVER['HTTP_REFERER'])
+        && str_contains($_SERVER['HTTP_REFERER'], $globalUrl);
+}
+
+/**
+  * Verify HTTP referer and token for API calls
+  *
+  * @param array $inputData
+  * @return void
+  */
+  function preventCSRFAPI(array $inputData): void
+  {
+      if (!isRefererOk()) triggerError('referer');
+  
+      if (!isset($_SESSION['token']) || !isset($inputData['token']) || $_SESSION['token'] !== $inputData['token']) {
+          triggerError('csrf');
+      }
+  }
+
+/**
+ * Print an error in json format and stop script.
+ *
+ * @param string $error Error code from errors array available in _congig.php
+ * @return void
+ */
+function triggerError(string $error): void
+{
+    global $errors;
+
+    $response = [
+        'isOk' => false,
+        'errorMessage' => $errors[$error]
+    ];
+    echo json_encode($response);
+    exit;
+}
+
+/**
  * Add a new error message to display on next page. 
  *
  * @param string $errorMsg - Error message to display
@@ -97,12 +143,12 @@ function getTask($callObjet)
     while ($task = $query->fetch()) {
         // var_dump($task["priority_level"]);
         if ($task["status"] === 1) {
-            echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-warning">' . $task['name'] . '</a>';
+            // echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-warning">' . $task['name'] . '</a>';
+
+            echo '<button type= "button" class= "js-delete-button my-2 list-group-item list-group-item-action list-group-item-warning" data-task-id='.$task["id_task"].'>' . $task['name'] . '</button>';
 
         } 
-        // if ($task["priority_level"] === 2 && $task["status"] === 1) {
-        //     echo '<a href="?id=' . $task["id_task"] . '" class="my-2 list-group-item list-group-item-action list-group-item-danger">' . $task['name'] . '</a>';
-        // }
+
     }
 }
 
@@ -169,6 +215,30 @@ function postTask($objet)
             }
         }
     }
+}
+
+function finishTask ($objet) {
+    $query = $objet->prepare ("UPDATE `task` SET `status`='4' WHERE Id_task = :id");
+
+    $queryValues = [
+        'id' => $_REQUEST['id']
+    ];
+
+    $queryIsOk = $query->execute($queryValues);
+
+        if ($queryIsOk) {
+            $url ='index.php?msg=insert_ok';
+
+            redirectTo($url);
+
+            exit;
+        } else {
+
+            $url ='index.php?error=insert_ko';
+            redirectTo($url);
+
+            exit;
+        }  
 }
 
 /**
